@@ -26,6 +26,11 @@
                     "id": "cph-judge-view-container",
                     "title": "CPH Judge",
                     "icon": "dist/static/panel-view-icon.svg"
+                },
+                {
+                    "id": "toiZero.container",
+                    "title": "TOI Zero",
+                    "icon": "dist/static/panel-view-icon.svg"
                 }
             ]
         },
@@ -35,10 +40,17 @@
                     "type": "webview",
                     "id": "cph.judgeView",
                     "name": "Results"
+                }
+            ],
+            "toiZero.container": [
+                {
+                    "type": "webview",
+                    "id": "toiZero.dashboard",
+                    "name": "TOI Zero"
                 },
                 {
                     "id": "toiZero.tasks",
-                    "name": "TOI Zero Tasks"
+                    "name": "Tasks"
                 }
             ]
         },

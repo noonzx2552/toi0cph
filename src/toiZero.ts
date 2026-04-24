@@ -142,8 +142,214 @@ class ToiZeroProvider implements vscode.TreeDataProvider<ToiTaskItem> {
     }
 }
 
+class ToiZeroDashboard implements vscode.WebviewViewProvider {
+    static readonly viewType = 'toiZero.dashboard';
+    private view?: vscode.WebviewView;
+    private status?: ToiStatusPayload;
+    private message = 'Click Refresh Status to login and load TOI Zero tasks.';
+    private error?: string;
+    private busy = false;
+
+    resolveWebviewView(webviewView: vscode.WebviewView) {
+        this.view = webviewView;
+        webviewView.webview.options = { enableScripts: true };
+        webviewView.webview.onDidReceiveMessage((message) => {
+            if (typeof message?.command === 'string') {
+                vscode.commands.executeCommand(message.command, message.task);
+            }
+        });
+        this.render();
+    }
+
+    setBusy(busy: boolean, message?: string) {
+        this.busy = busy;
+        if (message) {
+            this.message = message;
+        }
+        this.render();
+    }
+
+    setStatus(status: ToiStatusPayload, message?: string) {
+        this.status = status;
+        this.error = undefined;
+        this.busy = false;
+        this.message = message || 'Connected to TOI Zero.';
+        this.render();
+    }
+
+    setError(error: string) {
+        this.error = error;
+        this.busy = false;
+        this.message = "TOI Zero server can't connect.";
+        this.render();
+    }
+
+    setMessage(message: string) {
+        this.message = message;
+        this.render();
+    }
+
+    private render() {
+        if (!this.view) {
+            return;
+        }
+        this.view.webview.html = this.html();
+    }
+
+    private html() {
+        const nonce = Date.now().toString();
+        const summary = this.status?.summary;
+        const todo = this.status?.tasks.filter((task) => task.state === 'TODO').length;
+        const low = this.status?.tasks.filter((task) => task.state === 'LOW').length;
+        const done = this.status?.tasks.filter((task) => task.state === 'DONE').length;
+        const sampleTasks =
+            this.status?.counted_below_80
+                .slice(0, 8)
+                .map(
+                    (task) =>
+                        `<li><button data-command="toiZero.pickTask" data-task="${task.task}">${task.task}</button><span>${escapeHtml(
+                            task.name,
+                        )}</span><strong>${task.score}/${task.max_score}</strong></li>`,
+                )
+                .join('') || '<li class="empty">Refresh to see unfinished tasks.</li>';
+
+        return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+body {
+    color: var(--vscode-foreground);
+    background: var(--vscode-sideBar-background);
+    font-family: var(--vscode-font-family);
+    margin: 0;
+    padding: 14px;
+}
+.title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.credit { color: var(--vscode-descriptionForeground); font-size: 12px; margin-bottom: 14px; }
+.status {
+    border: 1px solid var(--vscode-panel-border);
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 12px;
+    background: var(--vscode-editor-background);
+}
+.ok { color: var(--vscode-testing-iconPassed); }
+.bad { color: var(--vscode-errorForeground); }
+.muted { color: var(--vscode-descriptionForeground); }
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 10px 0;
+}
+.metric {
+    border: 1px solid var(--vscode-panel-border);
+    border-radius: 6px;
+    padding: 10px;
+    background: var(--vscode-editor-background);
+}
+.metric div:first-child { font-size: 20px; font-weight: 700; }
+.metric div:last-child { font-size: 11px; color: var(--vscode-descriptionForeground); }
+.actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+button {
+    color: var(--vscode-button-foreground);
+    background: var(--vscode-button-background);
+    border: 0;
+    border-radius: 4px;
+    padding: 8px 10px;
+    text-align: left;
+    cursor: pointer;
+}
+button:hover { background: var(--vscode-button-hoverBackground); }
+.secondary {
+    color: var(--vscode-button-secondaryForeground);
+    background: var(--vscode-button-secondaryBackground);
+}
+.secondary:hover { background: var(--vscode-button-secondaryHoverBackground); }
+.error {
+    white-space: pre-wrap;
+    color: var(--vscode-errorForeground);
+    border: 1px solid var(--vscode-inputValidation-errorBorder);
+    background: var(--vscode-inputValidation-errorBackground);
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+}
+ul { list-style: none; padding: 0; margin: 0; }
+li {
+    display: grid;
+    grid-template-columns: 72px 1fr auto;
+    gap: 8px;
+    align-items: center;
+    border-bottom: 1px solid var(--vscode-panel-border);
+    padding: 6px 0;
+}
+li button { padding: 4px 6px; text-align: center; }
+li span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+li strong { font-size: 11px; color: var(--vscode-descriptionForeground); }
+.empty { display: block; color: var(--vscode-descriptionForeground); }
+</style>
+</head>
+<body>
+    <div class="title">TOI Zero</div>
+    <div class="credit">Solution shortcut credit: GitHub PakinDioxide</div>
+    <div class="status">
+        <div class="${this.error ? 'bad' : summary?.criteria_pass ? 'ok' : 'muted'}">${escapeHtml(
+            this.busy ? 'Loading...' : this.message,
+        )}</div>
+    </div>
+    ${this.error ? `<div class="error">${escapeHtml(this.error)}</div>` : ''}
+    <div class="grid">
+        <div class="metric"><div>${summary ? `${summary.counted_passed_all_levels}/${summary.required_all_levels}` : '-'}</div><div>All counted</div></div>
+        <div class="metric"><div>${summary ? `${summary.counted_passed_a2_a3}/${summary.required_a2_a3}` : '-'}</div><div>A2 + A3</div></div>
+        <div class="metric"><div>${done ?? '-'}</div><div>Done</div></div>
+        <div class="metric"><div>${low ?? '-'}/${todo ?? '-'}</div><div>Low / Todo</div></div>
+    </div>
+    <div class="actions">
+        <button data-command="toiZero.refreshStatus">Refresh Status / Login</button>
+        <button data-command="toiZero.downloadPdf" class="secondary">Download PDF</button>
+        <button data-command="toiZero.submitActiveFile" class="secondary">Submit Active File</button>
+        <button data-command="toiZero.checkSubmission" class="secondary">Check Submission Result</button>
+        <button data-command="toiZero.openSolution" class="secondary">Open Solution</button>
+        <button data-command="toiZero.showStatusJson" class="secondary">Open Status JSON</button>
+        <button data-command="toiZero.clearCredentials" class="secondary">Clear Login</button>
+    </div>
+    <h3>Need Work</h3>
+    <ul>${sampleTasks}</ul>
+    <script nonce="${nonce}">
+    const vscode = acquireVsCodeApi();
+    document.querySelectorAll('button[data-command]').forEach((button) => {
+        button.addEventListener('click', () => {
+            vscode.postMessage({
+                command: button.getAttribute('data-command'),
+                task: button.getAttribute('data-task') || undefined,
+            });
+        });
+    });
+    </script>
+</body>
+</html>`;
+    }
+}
+
+const escapeHtml = (value: unknown) =>
+    String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+
 export default function registerToiZero(context: vscode.ExtensionContext) {
     const provider = new ToiZeroProvider();
+    const dashboard = new ToiZeroDashboard();
     let cachedStatus: ToiStatusPayload | undefined;
 
     const runPython = async <T>(args: string[]): Promise<T> => {
@@ -231,14 +437,24 @@ export default function registerToiZero(context: vscode.ExtensionContext) {
                 title: 'TOI Zero: loading status',
             },
             async () => {
-                cachedStatus = await runPython<ToiStatusPayload>(
-                    await withCredentials(['--status', '--json']),
-                );
-                provider.refresh(cachedStatus.tasks);
-                const summary = cachedStatus.summary;
-                vscode.window.showInformationMessage(
-                    `TOI Zero: ${summary.counted_passed_all_levels}/${summary.required_all_levels} all, ${summary.counted_passed_a2_a3}/${summary.required_a2_a3} A2+A3, criteria ${summary.criteria_pass ? 'PASS' : 'NOT PASS'}.`,
-                );
+                try {
+                    dashboard.setBusy(true, 'Connecting to TOI Zero...');
+                    cachedStatus = await runPython<ToiStatusPayload>(
+                        await withCredentials(['--status', '--json']),
+                    );
+                    provider.refresh(cachedStatus.tasks);
+                    const summary = cachedStatus.summary;
+                    const message = `${summary.counted_passed_all_levels}/${summary.required_all_levels} all, ${summary.counted_passed_a2_a3}/${summary.required_a2_a3} A2+A3, criteria ${summary.criteria_pass ? 'PASS' : 'NOT PASS'}.`;
+                    dashboard.setStatus(cachedStatus, message);
+                    vscode.window.showInformationMessage(`TOI Zero: ${message}`);
+                } catch (error) {
+                    const message =
+                        error instanceof Error ? error.message : String(error);
+                    dashboard.setError(message);
+                    vscode.window.showErrorMessage(
+                        `TOI Zero server can't connect: ${message}`,
+                    );
+                }
             },
         );
     };
@@ -308,98 +524,133 @@ export default function registerToiZero(context: vscode.ExtensionContext) {
     };
 
     const downloadPdf = async (taskArg?: unknown) => {
-        const task =
-            taskArgumentToId(taskArg) ||
-            (await pickTaskId('Download TOI statement PDF'));
-        if (!task) {
-            return;
+        try {
+            const task =
+                taskArgumentToId(taskArg) ||
+                (await pickTaskId('Download TOI statement PDF'));
+            if (!task) {
+                return;
+            }
+            dashboard.setBusy(true, `Downloading ${normalizeTaskId(task)} PDF...`);
+            const outputDir = path.join(getWorkspaceFolder(), 'toi-pdfs');
+            const payload = await runPython<ToiDownloadPayload>(
+                await withCredentials([
+                    '--download',
+                    normalizeTaskId(task),
+                    '--download-dir',
+                    outputDir,
+                    '--json',
+                ]),
+            );
+            const uri = vscode.Uri.file(payload.download.path);
+            dashboard.setMessage(`Downloaded ${normalizeTaskId(task)} PDF.`);
+            await vscode.commands.executeCommand('vscode.open', uri);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            dashboard.setError(message);
+            vscode.window.showErrorMessage(
+                `TOI Zero server can't connect: ${message}`,
+            );
         }
-        const outputDir = path.join(getWorkspaceFolder(), 'toi-pdfs');
-        const payload = await runPython<ToiDownloadPayload>(
-            await withCredentials([
-                '--download',
-                normalizeTaskId(task),
-                '--download-dir',
-                outputDir,
-                '--json',
-            ]),
-        );
-        const uri = vscode.Uri.file(payload.download.path);
-        await vscode.commands.executeCommand('vscode.open', uri);
     };
 
     const submitActiveFile = async (taskArg?: unknown) => {
-        const editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            throw new Error('Open a source file before submitting.');
-        }
-        if (editor.document.isDirty) {
-            await editor.document.save();
-        }
+        try {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) {
+                throw new Error('Open a source file before submitting.');
+            }
+            if (editor.document.isDirty) {
+                await editor.document.save();
+            }
 
-        const task =
-            taskArgumentToId(taskArg) ||
-            taskFromActiveFile() ||
-            (await pickTaskId('Submit current file to TOI task'));
-        if (!task) {
-            return;
-        }
+            const task =
+                taskArgumentToId(taskArg) ||
+                taskFromActiveFile() ||
+                (await pickTaskId('Submit current file to TOI task'));
+            if (!task) {
+                return;
+            }
 
-        const payload = await runPython<ToiSubmitPayload>(
-            await withCredentials([
-                '-t',
-                normalizeTaskId(task),
-                '-l',
-                languageFromActiveFile(),
-                '-f',
-                editor.document.fileName,
-                '--wait-submit-result',
-                '60',
-                '--json',
-            ]),
-        );
-        if (payload.submission) {
+            dashboard.setBusy(true, `Submitting ${normalizeTaskId(task)}...`);
+            const payload = await runPython<ToiSubmitPayload>(
+                await withCredentials([
+                    '-t',
+                    normalizeTaskId(task),
+                    '-l',
+                    languageFromActiveFile(),
+                    '-f',
+                    editor.document.fileName,
+                    '--wait-submit-result',
+                    '60',
+                    '--json',
+                ]),
+            );
+            if (payload.submission) {
+                const result = payload.submission;
+                const score =
+                    result.score === null
+                        ? 'score unknown'
+                        : `${result.score}/${result.max_score}`;
+                vscode.window.showInformationMessage(
+                    `TOI submit ${payload.submit.task}: ${result.state} (${score})`,
+                );
+                dashboard.setMessage(
+                    `Submit ${payload.submit.task}: ${result.state} (${score})`,
+                );
+            } else {
+                vscode.window.showInformationMessage(
+                    `TOI submit ${payload.submit.task}: HTTP ${payload.submit.status_code} ${payload.submit.reason}`,
+                );
+                dashboard.setMessage(
+                    `Submit ${payload.submit.task}: HTTP ${payload.submit.status_code} ${payload.submit.reason}`,
+                );
+            }
+            await refreshStatus();
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            dashboard.setError(message);
+            vscode.window.showErrorMessage(
+                `TOI Zero server can't connect: ${message}`,
+            );
+        }
+    };
+
+    const checkSubmission = async (taskArg?: unknown) => {
+        try {
+            const task =
+                taskArgumentToId(taskArg) ||
+                taskFromActiveFile() ||
+                (await pickTaskId('Check TOI submission result'));
+            if (!task) {
+                return;
+            }
+            dashboard.setBusy(true, `Checking ${normalizeTaskId(task)} result...`);
+            const payload = await runPython<ToiSubmissionPayload>(
+                await withCredentials([
+                    '--check-submission',
+                    normalizeTaskId(task),
+                    '--wait',
+                    '30',
+                    '--json',
+                ]),
+            );
             const result = payload.submission;
             const score =
                 result.score === null
                     ? 'score unknown'
                     : `${result.score}/${result.max_score}`;
             vscode.window.showInformationMessage(
-                `TOI submit ${payload.submit.task}: ${result.state} (${score})`,
+                `TOI ${result.task}: ${result.state} (${score})`,
             );
-        } else {
-            vscode.window.showInformationMessage(
-                `TOI submit ${payload.submit.task}: HTTP ${payload.submit.status_code} ${payload.submit.reason}`,
+            dashboard.setMessage(`Check ${result.task}: ${result.state} (${score})`);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            dashboard.setError(message);
+            vscode.window.showErrorMessage(
+                `TOI Zero server can't connect: ${message}`,
             );
         }
-        await refreshStatus();
-    };
-
-    const checkSubmission = async (taskArg?: unknown) => {
-        const task =
-            taskArgumentToId(taskArg) ||
-            taskFromActiveFile() ||
-            (await pickTaskId('Check TOI submission result'));
-        if (!task) {
-            return;
-        }
-        const payload = await runPython<ToiSubmissionPayload>(
-            await withCredentials([
-                '--check-submission',
-                normalizeTaskId(task),
-                '--wait',
-                '30',
-                '--json',
-            ]),
-        );
-        const result = payload.submission;
-        const score =
-            result.score === null
-                ? 'score unknown'
-                : `${result.score}/${result.max_score}`;
-        vscode.window.showInformationMessage(
-            `TOI ${result.task}: ${result.state} (${score})`,
-        );
     };
 
     const openSolution = async (taskArg?: unknown) => {
@@ -423,6 +674,7 @@ export default function registerToiZero(context: vscode.ExtensionContext) {
     const clearCredentials = async () => {
         await context.secrets.delete(SECRET_USERNAME);
         await context.secrets.delete(SECRET_PASSWORD);
+        dashboard.setMessage('Saved TOI login cleared.');
         vscode.window.showInformationMessage('TOI Zero credentials cleared.');
     };
 
@@ -451,6 +703,10 @@ export default function registerToiZero(context: vscode.ExtensionContext) {
     };
 
     context.subscriptions.push(
+        vscode.window.registerWebviewViewProvider(
+            ToiZeroDashboard.viewType,
+            dashboard,
+        ),
         vscode.window.registerTreeDataProvider('toiZero.tasks', provider),
         vscode.commands.registerCommand('toiZero.refreshStatus', refreshStatus),
         vscode.commands.registerCommand('toiZero.showStatusJson', showStatusJson),

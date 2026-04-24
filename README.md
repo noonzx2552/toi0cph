@@ -47,6 +47,11 @@ enter testcases.
 This fork adds TOI Zero workflow commands for
 `toi-coding.informatics.buu.ac.th/00-pre-toi`.
 
+Open the `TOI Zero` activity bar icon to use the dashboard. It shows the
+connection state, pass-count summary, unfinished tasks, and large buttons for
+the common actions. If login or the grader server fails, the dashboard shows
+`TOI Zero server can't connect` with the underlying error.
+
 Available functions:
 
 -   `TOI Zero: Refresh Status` - login, fetch the overview page, and list all
