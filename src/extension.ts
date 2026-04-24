@@ -38,6 +38,7 @@ import JudgeViewProvider from './webview/JudgeView';
 import { getRetainWebviewContextPref } from './preferences';
 import TelemetryReporter from '@vscode/extension-telemetry';
 import config from './config';
+import registerToiZero from './toiZero';
 
 let judgeViewProvider: JudgeViewProvider;
 
@@ -91,6 +92,7 @@ const registerCommands = (context: vscode.ExtensionContext) => {
     context.subscriptions.push(disposable2);
     context.subscriptions.push(disposable3);
     context.subscriptions.push(disposable4);
+    registerToiZero(context);
     globalThis.reporter = new TelemetryReporter(config.telemetryKey);
     context.subscriptions.push(globalThis.reporter);
 };

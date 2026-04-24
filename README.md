@@ -42,6 +42,40 @@ enter testcases.
 -   Works locally for your own problems.
 -   Support for several languages.
 
+## TOI Zero Integration
+
+This fork adds TOI Zero workflow commands for
+`toi-coding.informatics.buu.ac.th/00-pre-toi`.
+
+Available functions:
+
+-   `TOI Zero: Refresh Status` - login, fetch the overview page, and list all
+    A1/A2/A3 tasks in the TOI Zero tree view.
+-   `TOI Zero: Show Status JSON` - open the full parsed JSON status, including
+    summary, tasks, counted tasks, excluded tasks, and scores.
+-   `TOI Zero: Download PDF` - download a selected task statement PDF into
+    `toi-pdfs/` and open it in VS Code.
+-   `TOI Zero: Submit Active File` - submit the currently opened source file to
+    the selected task. The extension maps `.cpp/.cc/.cxx` to `C++17 / g++`,
+    `.c` to `C11 / gcc`, and `.py` to `Python 3 / CPython`.
+-   `TOI Zero: Check Submission Result` - fetch the latest selected-task
+    submission page, wait briefly if the grader is still running, and report
+    `PASS`, `NOT_PASS`, `RUNNING`, or `UNKNOWN` with the score when available.
+-   `TOI Zero: Open Solution (PakinDioxide)` - open a GitHub code search for
+    the selected task scoped to `PakinDioxide`.
+-   `TOI Zero: Clear Saved Login` - remove saved TOI username/password from VS
+    Code Secret Storage.
+
+The TOI Zero tree states are:
+
+-   `DONE` - score is at least 80 and the task is counted.
+-   `LOW` - submitted, but score is below 80.
+-   `TODO` - no passing score yet.
+-   `EXCLUDED` - task is excluded from the 2569 criteria.
+-   `EXCLUDED_OK` - task is excluded, but already has a passing score.
+
+Credit for the solution shortcut: GitHub `PakinDioxide`.
+
 ## Supported Languages
 
 -   C++

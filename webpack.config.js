@@ -67,7 +67,13 @@ const config = {
                     from: 'src/webview/frontend/index.html',
                     to: 'frontend/index.html',
                 },
-                { from: 'static', to: 'static' },
+                {
+                    from: 'static',
+                    to: 'static',
+                    globOptions: {
+                        ignore: ['**/__pycache__/**', '**/*.pyc'],
+                    },
+                },
             ],
         }),
     ],

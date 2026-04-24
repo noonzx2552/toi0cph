@@ -35,6 +35,10 @@
                     "type": "webview",
                     "id": "cph.judgeView",
                     "name": "Results"
+                },
+                {
+                    "id": "toiZero.tasks",
+                    "name": "TOI Zero Tasks"
                 }
             ]
         },
@@ -48,8 +52,92 @@
                 "command": "cph.submitToCodeForces",
                 "title": "Submit to CodeForces",
                 "icon": "dist/static/play.png"
+            },
+            {
+                "command": "toiZero.refreshStatus",
+                "title": "TOI Zero: Refresh Status"
+            },
+            {
+                "command": "toiZero.showStatusJson",
+                "title": "TOI Zero: Show Status JSON"
+            },
+            {
+                "command": "toiZero.downloadPdf",
+                "title": "TOI Zero: Download PDF"
+            },
+            {
+                "command": "toiZero.submitActiveFile",
+                "title": "TOI Zero: Submit Active File"
+            },
+            {
+                "command": "toiZero.checkSubmission",
+                "title": "TOI Zero: Check Submission Result"
+            },
+            {
+                "command": "toiZero.openSolution",
+                "title": "TOI Zero: Open Solution (PakinDioxide)"
+            },
+            {
+                "command": "toiZero.clearCredentials",
+                "title": "TOI Zero: Clear Saved Login"
             }
         ],
+        "menus": {
+            "view/title": [
+                {
+                    "command": "toiZero.refreshStatus",
+                    "when": "view == toiZero.tasks",
+                    "group": "navigation"
+                },
+                {
+                    "command": "toiZero.showStatusJson",
+                    "when": "view == toiZero.tasks",
+                    "group": "navigation"
+                },
+                {
+                    "command": "toiZero.downloadPdf",
+                    "when": "view == toiZero.tasks",
+                    "group": "1_actions"
+                },
+                {
+                    "command": "toiZero.submitActiveFile",
+                    "when": "view == toiZero.tasks",
+                    "group": "1_actions"
+                },
+                {
+                    "command": "toiZero.checkSubmission",
+                    "when": "view == toiZero.tasks",
+                    "group": "1_actions"
+                },
+                {
+                    "command": "toiZero.openSolution",
+                    "when": "view == toiZero.tasks",
+                    "group": "1_actions"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "toiZero.downloadPdf",
+                    "when": "view == toiZero.tasks && viewItem == toiTask",
+                    "group": "inline"
+                },
+                {
+                    "command": "toiZero.submitActiveFile",
+                    "when": "view == toiZero.tasks && viewItem == toiTask",
+                    "group": "inline"
+                },
+                {
+                    "command": "toiZero.checkSubmission",
+                    "when": "view == toiZero.tasks && viewItem == toiTask",
+                    "group": "inline"
+                },
+                {
+                    "command": "toiZero.openSolution",
+                    "when": "view == toiZero.tasks && viewItem == toiTask",
+                    "group": "inline"
+                }
+            ]
+        },
         "keybindings": [
             {
                 "key": "ctrl+alt+b",
@@ -399,6 +487,11 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Whether to display the live user count."
+                },
+                "toiZero.pythonPath": {
+                    "type": "string",
+                    "default": "python",
+                    "description": "Python command used by TOI Zero integration. Use python, py, or a full python.exe path."
                 }
             }
         }
