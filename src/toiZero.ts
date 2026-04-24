@@ -299,7 +299,7 @@ li strong { font-size: 11px; color: var(--vscode-descriptionForeground); }
 </head>
 <body>
     <div class="title">TOI Zero</div>
-    <div class="credit">Solution shortcut credit: GitHub PakinDioxide</div>
+    <div class="credit">Credits: GitHub PakinDioxide, idkwhyiusethisname</div>
     <div class="status">
         <div class="${this.error ? 'bad' : summary?.criteria_pass ? 'ok' : 'muted'}">${escapeHtml(
             this.busy ? 'Loading...' : this.message,
@@ -667,7 +667,7 @@ export default function registerToiZero(context: vscode.ExtensionContext) {
         );
         await vscode.env.openExternal(url);
         vscode.window.showInformationMessage(
-            'Solution credit: GitHub PakinDioxide',
+            'Credits: GitHub PakinDioxide, idkwhyiusethisname',
         );
     };
 

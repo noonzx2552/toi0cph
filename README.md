@@ -79,7 +79,7 @@ The TOI Zero tree states are:
 -   `EXCLUDED` - task is excluded from the 2569 criteria.
 -   `EXCLUDED_OK` - task is excluded, but already has a passing score.
 
-Credit for the solution shortcut: GitHub `PakinDioxide`.
+Credits: GitHub `PakinDioxide`, `idkwhyiusethisname`.
 
 ## Supported Languages
 
