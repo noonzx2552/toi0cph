@@ -23,6 +23,16 @@ class JudgeViewProvider implements vscode.WebviewViewProvider {
 
     private messageBuffer: VSToWebViewMessage[] = [];
 
+    private readonly toiCommands = new Set([
+        'toiZero.refreshStatus',
+        'toiZero.downloadPdf',
+        'toiZero.submitActiveFile',
+        'toiZero.checkSubmission',
+        'toiZero.openSolution',
+        'toiZero.showStatusJson',
+        'toiZero.clearCredentials',
+    ]);
+
     public isViewUninitialized() {
         return this._view === undefined;
     }
@@ -69,6 +79,15 @@ class JudgeViewProvider implements vscode.WebviewViewProvider {
 
                     case 'get-ext-logs': {
                         this.sendExtLogs();
+                        break;
+                    }
+
+                    case 'toi-command': {
+                        if (this.toiCommands.has(message.toiCommand)) {
+                            void vscode.commands.executeCommand(
+                                message.toiCommand,
+                            );
+                        }
                         break;
                     }
 

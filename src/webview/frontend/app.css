@@ -78,6 +78,43 @@ body {
     filter: brightness(115%);
 }
 
+.toi-actions {
+    padding: 10px;
+    border-bottom: 1px solid rgba(200, 200, 200, 0.16);
+    background: var(--vscode-sideBar-background);
+}
+
+.toi-actions-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.toi-actions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+.toi-actions .btn {
+    width: 100%;
+    margin: 0;
+    padding: 7px 8px;
+}
+
+.btn-quiet {
+    width: auto !important;
+    color: var(--vscode-button-secondaryForeground);
+    background: var(--vscode-button-secondaryBackground);
+}
+
+.btn-blue {
+    background: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
+}
+
 .actions {
     position: fixed;
     bottom: 0px;

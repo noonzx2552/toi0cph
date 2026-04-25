@@ -54,6 +54,60 @@ window.console.debug = customLogger.bind(window.console, originalConsole.debug);
 // Original: www.paypal.com/ncp/payment/CMLKCFEJEMX5L
 const payPalUrl = 'https://rb.gy/5iiorz';
 
+const sendToiCommand = (toiCommand: string) => {
+    vscodeApi.postMessage({
+        command: 'toi-command',
+        toiCommand,
+    });
+};
+
+function ToiActions() {
+    return (
+        <div className="toi-actions">
+            <div className="toi-actions-header">
+                <strong>TOI Zero</strong>
+                <button
+                    className="btn btn-quiet"
+                    onClick={() => sendToiCommand('toiZero.refreshStatus')}
+                    title="Refresh TOI status"
+                >
+                    Refresh
+                </button>
+            </div>
+            <div className="toi-actions-grid">
+                <button
+                    className="btn btn-blue"
+                    onClick={() => sendToiCommand('toiZero.downloadPdf')}
+                    title="Download task PDF"
+                >
+                    PDF
+                </button>
+                <button
+                    className="btn btn-blue"
+                    onClick={() => sendToiCommand('toiZero.submitActiveFile')}
+                    title="Submit active file"
+                >
+                    Submit
+                </button>
+                <button
+                    className="btn btn-blue"
+                    onClick={() => sendToiCommand('toiZero.checkSubmission')}
+                    title="Check latest submission"
+                >
+                    Check
+                </button>
+                <button
+                    className="btn btn-blue"
+                    onClick={() => sendToiCommand('toiZero.openSolution')}
+                    title="Open solution reference"
+                >
+                    Solution
+                </button>
+            </div>
+        </div>
+    );
+}
+
 function getLiveUserCount(): Promise<number> {
     console.log('Fetching live user count');
     return fetch(window.remoteServerAddress)
@@ -617,6 +671,7 @@ function Judge(props: {
         <div className="ui">
             {notification && <div className="notification">{notification}</div>}
             {renderInfoPage()}
+            <ToiActions />
             <div className="meta">
                 <span className="problem-name">
                     <a href={getHref()}>{problem.name}</a>{' '}
@@ -833,6 +888,7 @@ function App() {
         return (
             <>
                 <div className={`ui p10 fallback`}>
+                    <ToiActions />
                     <div className="text-center">
                         <p>
                             This file does not have testcases yet.

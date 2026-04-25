@@ -191,6 +191,11 @@ export type GetExtLogs = {
     command: 'get-ext-logs';
 };
 
+export type ToiCommand = {
+    command: 'toi-command';
+    toiCommand: string;
+};
+
 export type WebviewToVSEvent =
     | RunAllCommand
     | GetInitialProblem
@@ -203,7 +208,8 @@ export type WebviewToVSEvent =
     | OnlineJudgeEnv
     | SubmitKattis
     | OpenUrl
-    | GetExtLogs;
+    | GetExtLogs
+    | ToiCommand;
 
 export type RunningCommand = {
     command: 'running';

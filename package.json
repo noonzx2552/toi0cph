@@ -35,17 +35,6 @@
                     "type": "webview",
                     "id": "toiZero.testcases",
                     "name": "TOI Zero"
-                },
-                {
-                    "type": "webview",
-                    "id": "toiZero.dashboard",
-                    "name": "Dashboard",
-                    "visibility": "collapsed"
-                },
-                {
-                    "id": "toiZero.tasks",
-                    "name": "Tasks",
-                    "visibility": "collapsed"
                 }
             ]
         },
