@@ -80,21 +80,34 @@ body {
 
 .toi-panel,
 .testcase-panel {
-    margin: 10px;
-    border: 1px solid var(--vscode-panel-border);
-    background: var(--vscode-editor-background);
+    margin: 0;
+    border: 0;
+    border-top: 1px solid var(--vscode-panel-border);
+    border-bottom: 1px solid var(--vscode-panel-border);
+    background: var(--vscode-sideBar-background);
     overflow: hidden;
+    border-radius: 0 !important;
+}
+
+.testcase-panel {
+    border-top: 0;
 }
 
 .toi-panel summary,
 .testcase-panel summary {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    padding: 10px;
+    gap: 5px;
+    min-height: 22px;
+    padding: 2px 8px;
     font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
     list-style: none;
+    background: var(--vscode-sideBar-background);
+    cursor: pointer !important;
+    border-radius: 0 !important;
 }
 
 .toi-panel summary::-webkit-details-marker,
@@ -104,22 +117,28 @@ body {
 
 .toi-panel summary::before,
 .testcase-panel summary::before {
-    content: '›';
+    content: '▸';
     color: var(--vscode-textLink-foreground);
-    font-size: 16px;
+    font-size: 11px;
     line-height: 1;
-    transform: rotate(0deg);
+    transform: none;
 }
 
 .toi-panel[open] summary::before,
 .testcase-panel[open] summary::before {
-    transform: rotate(90deg);
+    content: '▾';
 }
 
 .toi-panel-body,
 .testcase-panel-body {
     border-top: 1px solid var(--vscode-panel-border);
-    padding: 10px;
+    padding: 8px;
+    background: var(--vscode-editor-background);
+    border-radius: 0 !important;
+}
+
+.testcase-panel-body {
+    padding: 0;
 }
 
 .toi-actions-grid {
@@ -157,11 +176,29 @@ body {
 .toi-panel summary .btn-quiet {
     width: auto !important;
     min-width: 78px;
+    padding: 4px 8px;
+    text-transform: none;
 }
 
 .btn-blue {
     background: var(--vscode-button-background);
     color: var(--vscode-button-foreground);
+}
+
+.testcase-panel summary .problem-name {
+    margin: 0;
+    padding: 0;
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.testcase-panel summary .pass-rate {
+    margin: 0;
+    float: none;
+    font-size: 11px;
+    text-transform: none;
 }
 
 .actions {
