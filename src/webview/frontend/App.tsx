@@ -616,7 +616,6 @@ function Judge(props: {
     return (
         <div className="ui">
             {notification && <div className="notification">{notification}</div>}
-            {renderDonateButton()}
             {renderInfoPage()}
             <div className="meta">
                 <span className="problem-name">
@@ -666,48 +665,6 @@ function Judge(props: {
                     </span>
                     {renderTimeoutAVSuggestion()}
                 </div>
-                <br />
-                <br />
-                <div>
-                    <small>
-                        <a
-                            href={payPalUrl}
-                            className="btn btn-pink"
-                            title="Donate"
-                        >
-                            <i className="codicon codicon-heart-filled"></i>{' '}
-                            Support
-                        </a>
-                    </small>
-                    <small>
-                        <a href="https://rb.gy/vw82u5" className="btn">
-                            <i className="codicon codicon-feedback"></i>{' '}
-                            Feedback
-                        </a>
-                    </small>
-                    <small>
-                        <a
-                            href="https://github.com/agrawal-d/cph/issues"
-                            className="btn btn-black"
-                        >
-                            <i className="codicon codicon-github"></i> Bugs
-                        </a>
-                    </small>
-                </div>
-                <div className="remote-message">
-                    <p
-                        dangerouslySetInnerHTML={{
-                            __html: window.remoteMessage || '',
-                        }}
-                    />
-                </div>
-                {window.showLiveUserCount && liveUserCount > 0 && (
-                    <div className="liveUserCount">
-                        <i className="codicon codicon-circle-filled color-green"></i>{' '}
-                        {liveUserCount} {liveUserCount === 1 ? 'user' : 'users'}{' '}
-                        online.
-                    </div>
-                )}
             </div>
             <div className="actions">
                 <div className="row">
@@ -742,16 +699,6 @@ function Judge(props: {
                             <i className="codicon codicon-circle-slash"></i>
                         </span>{' '}
                         <span className="action-text">Stop</span>
-                    </button>
-                    <button
-                        className="btn"
-                        title="Info"
-                        onClick={() => showInfoPage()}
-                    >
-                        <span className="icon">
-                            <i className="codicon codicon-info"></i>
-                        </span>{' '}
-                        <span className="action-text"></span>
                     </button>
                     <button
                         className="btn btn-red right"
@@ -888,25 +835,15 @@ function App() {
                 <div className={`ui p10 fallback`}>
                     <div className="text-center">
                         <p>
-                            This document does not have a CPH problem associated
-                            with it.
+                            This file does not have testcases yet.
                         </p>
                         <br />
                         <div className="btn btn-block" onClick={createProblem}>
                             <span className="icon">
                                 <i className="codicon codicon-add"></i>
                             </span>{' '}
-                            Create Problem
+                            Create Testcases
                         </div>
-                        <a
-                            className="btn btn-block btn-green"
-                            href="https://github.com/agrawal-d/cph/blob/main/docs/user-guide.md"
-                        >
-                            <span className="icon">
-                                <i className="codicon codicon-question"></i>
-                            </span>{' '}
-                            How to use this extension
-                        </a>
                     </div>
                 </div>
             </>

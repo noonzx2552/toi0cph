@@ -48,9 +48,9 @@ This fork adds TOI Zero workflow commands for
 `toi-coding.informatics.buu.ac.th/00-pre-toi`.
 
 Open the `TOI Zero` activity bar icon to use the dashboard. It shows the
-connection state, pass-count summary, unfinished tasks, and large buttons for
-the common actions. If login or the grader server fails, the dashboard shows
-`TOI Zero server can't connect` with the underlying error.
+connection state, pass-count summary, testcase runner, unfinished tasks, and
+large buttons for the common actions. If login or the grader server fails, the
+dashboard shows `TOI Zero server can't connect` with the underlying error.
 
 Available functions:
 
@@ -66,8 +66,8 @@ Available functions:
 -   `TOI Zero: Check Submission Result` - fetch the latest selected-task
     submission page, wait briefly if the grader is still running, and report
     `PASS`, `NOT_PASS`, `RUNNING`, or `UNKNOWN` with the score when available.
--   `TOI Zero: Open Solution (PakinDioxide)` - open a GitHub code search for
-    the selected task scoped to `PakinDioxide`.
+-   `TOI Zero: Open Solution (PakinDioxide)` - open the selected task solution
+    file in `PakinDioxide/TOI-zero`.
 -   `TOI Zero: Clear Saved Login` - remove saved TOI username/password from VS
     Code Secret Storage.
 

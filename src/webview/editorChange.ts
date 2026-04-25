@@ -47,7 +47,7 @@ export const editorChanged = async (e: vscode.TextEditor | undefined) => {
         getAutoShowJudgePref() &&
         getJudgeViewProvider().isViewUninitialized()
     ) {
-        vscode.commands.executeCommand('cph.judgeView.focus');
+        vscode.commands.executeCommand('toiZero.testcases.focus');
     }
 
     globalThis.logger.log('Sent problem @', Date.now());

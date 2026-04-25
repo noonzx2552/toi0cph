@@ -463,7 +463,7 @@ def build_status_payload(
 
 
 def print_json(payload: dict[str, object]) -> None:
-    print(json.dumps(payload, ensure_ascii=False, indent=2))
+    print(json.dumps(payload, ensure_ascii=True, indent=2))
 
 
 def task_state(task: dict[str, object]) -> str:

@@ -17,7 +17,7 @@ import {
 import { setOnlineJudgeEnv } from '../compiler';
 
 class JudgeViewProvider implements vscode.WebviewViewProvider {
-    public static readonly viewType = 'cph.judgeView';
+    public static readonly viewType = 'toiZero.testcases';
 
     private _view?: vscode.WebviewView;
 
@@ -163,7 +163,7 @@ class JudgeViewProvider implements vscode.WebviewViewProvider {
     public async focus() {
         globalThis.logger.log('focusing');
         if (!this._view) {
-            await vscode.commands.executeCommand('cph.judgeView.focus');
+            await vscode.commands.executeCommand('toiZero.testcases.focus');
         } else {
             this._view.show?.(true);
         }

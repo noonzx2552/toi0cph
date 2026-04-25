@@ -75,6 +75,8 @@ const SECRET_USERNAME = 'toiZero.username';
 const SECRET_PASSWORD = 'toiZero.password';
 const DASHBOARD_ALLOWED_COMMANDS = new Set([
     'toiZero.refreshStatus',
+    'toiZero.runTestCases',
+    'toiZero.showDashboard',
     'toiZero.downloadPdf',
     'toiZero.openDownloadedPdf',
     'cph.runTestCases',
@@ -165,6 +167,7 @@ class ToiZeroDashboard implements vscode.WebviewViewProvider {
     private lastSubmission?: ToiSubmissionResult;
     private lastDownload?: ToiDownloadPayload['download'];
     private busy = false;
+    private compact = false;
 
     resolveWebviewView(webviewView: vscode.WebviewView) {
         this.view = webviewView;
@@ -188,6 +191,7 @@ class ToiZeroDashboard implements vscode.WebviewViewProvider {
     }
 
     setBusy(busy: boolean, message?: string) {
+        this.compact = false;
         this.busy = busy;
         if (message) {
             this.message = message;
@@ -196,6 +200,7 @@ class ToiZeroDashboard implements vscode.WebviewViewProvider {
     }
 
     setStatus(status: ToiStatusPayload, message?: string) {
+        this.compact = false;
         this.status = status;
         this.error = undefined;
         this.errorDetails = undefined;
@@ -205,6 +210,7 @@ class ToiZeroDashboard implements vscode.WebviewViewProvider {
     }
 
     setSubmissionResult(result: ToiSubmissionResult, message?: string) {
+        this.compact = false;
         this.lastSubmission = result;
         this.error = undefined;
         this.errorDetails = undefined;
@@ -214,6 +220,7 @@ class ToiZeroDashboard implements vscode.WebviewViewProvider {
     }
 
     setDownloaded(download: ToiDownloadPayload['download'], message?: string) {
+        this.compact = false;
         this.lastDownload = download;
         this.error = undefined;
         this.errorDetails = undefined;
@@ -223,6 +230,7 @@ class ToiZeroDashboard implements vscode.WebviewViewProvider {
     }
 
     clearState(message?: string) {
+        this.compact = false;
         this.status = undefined;
         this.error = undefined;
         this.errorDetails = undefined;
@@ -235,6 +243,7 @@ class ToiZeroDashboard implements vscode.WebviewViewProvider {
     }
 
     setError(error: string, details?: string) {
+        this.compact = false;
         this.error = error;
         this.errorDetails = details;
         this.busy = false;
@@ -244,6 +253,11 @@ class ToiZeroDashboard implements vscode.WebviewViewProvider {
 
     setMessage(message: string) {
         this.message = message;
+        this.render();
+    }
+
+    setCompact(compact: boolean) {
+        this.compact = compact;
         this.render();
     }
 
@@ -293,6 +307,59 @@ class ToiZeroDashboard implements vscode.WebviewViewProvider {
                   .join('')
             : '<small class="muted">Refresh Status to load task folders.</small>';
 
+        if (this.compact) {
+            return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+body {
+    color: var(--vscode-foreground);
+    background: var(--vscode-sideBar-background);
+    font-family: var(--vscode-font-family);
+    margin: 0;
+    padding: 8px 12px;
+}
+.compact-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+.title { font-size: 13px; font-weight: 700; }
+.muted { color: var(--vscode-descriptionForeground); font-size: 12px; }
+button {
+    color: var(--vscode-button-secondaryForeground);
+    background: var(--vscode-button-secondaryBackground);
+    border: 0;
+    border-radius: 4px;
+    padding: 5px 8px;
+    cursor: pointer;
+}
+button:hover { background: var(--vscode-button-secondaryHoverBackground); }
+</style>
+</head>
+<body>
+    <div class="compact-row">
+        <div>
+            <div class="title">TOI Zero</div>
+            <div class="muted">Testcases active below</div>
+        </div>
+        <button data-command="toiZero.showDashboard">Dashboard</button>
+    </div>
+    <script nonce="${nonce}">
+    const vscode = acquireVsCodeApi();
+    document.querySelectorAll('button[data-command]').forEach((button) => {
+        button.addEventListener('click', () => {
+            vscode.postMessage({ command: button.getAttribute('data-command') });
+        });
+    });
+    </script>
+</body>
+</html>`;
+        }
+
         return `<!doctype html>
 <html lang="en">
 <head>
@@ -304,9 +371,21 @@ body {
     background: var(--vscode-sideBar-background);
     font-family: var(--vscode-font-family);
     margin: 0;
-    padding: 14px;
+    padding: 12px;
 }
-.title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.title { font-size: 16px; font-weight: 700; }
+.status-text {
+    margin-bottom: 10px;
+    font-size: 12px;
+    line-height: 1.4;
+}
 .credit { color: var(--vscode-descriptionForeground); font-size: 12px; margin-bottom: 14px; }
 .status {
     border: 1px solid var(--vscode-panel-border);
@@ -321,33 +400,43 @@ body {
 .grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin: 10px 0;
+    gap: 6px;
+    margin: 0 0 12px;
 }
 .metric {
     border: 1px solid var(--vscode-panel-border);
     border-radius: 6px;
-    padding: 10px;
+    padding: 8px 10px;
     background: var(--vscode-editor-background);
 }
-.metric div:first-child { font-size: 20px; font-weight: 700; }
+.metric div:first-child { font-size: 18px; font-weight: 700; }
 .metric div:last-child { font-size: 11px; color: var(--vscode-descriptionForeground); }
 .actions {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 8px;
-    margin-bottom: 14px;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 12px;
 }
 button {
     color: var(--vscode-button-foreground);
     background: var(--vscode-button-background);
     border: 0;
     border-radius: 4px;
-    padding: 8px 10px;
-    text-align: left;
+    padding: 7px 9px;
+    text-align: center;
     cursor: pointer;
+    min-width: 0;
 }
 button:hover { background: var(--vscode-button-hoverBackground); }
+.small-button {
+    flex: 0 0 auto;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+.primary-action {
+    grid-column: 1 / -1;
+    font-weight: 700;
+}
 .secondary {
     color: var(--vscode-button-secondaryForeground);
     background: var(--vscode-button-secondaryBackground);
@@ -380,15 +469,15 @@ button:hover { background: var(--vscode-button-hoverBackground); }
 .result {
     border: 1px solid var(--vscode-panel-border);
     border-radius: 6px;
-    padding: 10px;
+    padding: 8px 10px;
     margin-bottom: 12px;
     background: var(--vscode-editor-background);
 }
 .result h3 {
     margin: 0 0 8px 0;
-    font-size: 12px;
+    font-size: 11px;
     color: var(--vscode-descriptionForeground);
-    letter-spacing: 0.04em;
+    letter-spacing: 0;
     text-transform: uppercase;
 }
 .result-row {
@@ -418,9 +507,9 @@ button:hover { background: var(--vscode-button-hoverBackground); }
 }
 .download-box h3 {
     margin: 0 0 8px 0;
-    font-size: 12px;
+    font-size: 11px;
     color: var(--vscode-descriptionForeground);
-    letter-spacing: 0.04em;
+    letter-spacing: 0;
     text-transform: uppercase;
 }
 .download-row {
@@ -437,13 +526,22 @@ input[type="text"] {
     padding: 8px;
 }
 .download-last {
-    display: grid;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: 8px;
+    margin-top: 6px;
+}
+.download-last small {
+    color: var(--vscode-descriptionForeground);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .task-folders {
     display: grid;
-    gap: 8px;
-    margin-top: 10px;
+    gap: 6px;
+    margin-top: 8px;
 }
 .task-folder {
     border: 1px solid var(--vscode-panel-border);
@@ -474,9 +572,31 @@ input[type="text"] {
     padding: 6px 4px;
     font-size: 12px;
 }
+.advanced {
+    margin-top: 10px;
+    border-top: 1px solid var(--vscode-panel-border);
+    padding-top: 8px;
+}
+.advanced summary {
+    cursor: pointer;
+    color: var(--vscode-descriptionForeground);
+    font-size: 12px;
+}
+.advanced-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-top: 8px;
+}
 .empty-inline {
     color: var(--vscode-descriptionForeground);
     font-size: 12px;
+}
+section h3 {
+    margin: 2px 0 8px;
+    font-size: 11px;
+    color: var(--vscode-descriptionForeground);
+    text-transform: uppercase;
 }
 ul { list-style: none; padding: 0; margin: 0; }
 li {
@@ -495,19 +615,21 @@ li strong { font-size: 11px; color: var(--vscode-descriptionForeground); }
     margin-top: 16px;
     color: var(--vscode-descriptionForeground);
     font-size: 12px;
+    display: none;
 }
 </style>
 </head>
 <body>
-    <div class="title">TOI Zero</div>
-    <div class="status">
-        <div class="${this.error ? 'bad' : summary?.criteria_pass ? 'ok' : 'muted'}">${escapeHtml(
-            this.busy ? 'Loading...' : this.message,
-        )}</div>
+    <div class="topbar">
+        <div class="title">TOI Zero</div>
+        <button data-command="toiZero.refreshStatus" class="secondary small-button">Refresh</button>
     </div>
+    <div class="status-text ${this.error ? 'bad' : summary?.criteria_pass ? 'ok' : 'muted'}">${escapeHtml(
+        this.busy ? 'Loading...' : this.message,
+    )}</div>
     ${
         this.lastSubmission
-            ? `<div class="result"><h3>Last Submission</h3><div class="result-row"><div><strong>${escapeHtml(
+            ? `<div class="result"><div class="result-row"><div><h3>Last Submission</h3><strong>${escapeHtml(
                   this.lastSubmission.task,
               )}</strong> <span class="pill ${
                   this.lastSubmission.state === 'PASS'
@@ -519,11 +641,23 @@ li strong { font-size: 11px; color: var(--vscode-descriptionForeground); }
                   formatSubmissionScore(this.lastSubmission),
               )}</strong></div><small>${escapeHtml(
                   this.lastSubmission.submission_id
-                      ? `submission_id: ${this.lastSubmission.submission_id}`
-                      : 'submission_id: unknown',
+                      ? `id: ${this.lastSubmission.submission_id}`
+                      : 'id: unknown',
               )}</small></div>`
             : ''
     }
+    <div class="grid">
+        <div class="metric"><div>${summary ? `${summary.counted_passed_all_levels}/${summary.required_all_levels}` : '-'}</div><div>All counted</div></div>
+        <div class="metric"><div>${summary ? `${summary.counted_passed_a2_a3}/${summary.required_a2_a3}` : '-'}</div><div>A2 + A3</div></div>
+        <div class="metric"><div>${done ?? '-'}</div><div>Done</div></div>
+        <div class="metric"><div>${low ?? '-'}/${todo ?? '-'}</div><div>Low / Todo</div></div>
+    </div>
+    <div class="actions">
+        <button data-command="toiZero.runTestCases" class="primary-action">Run & Show Testcases</button>
+        <button data-command="toiZero.submitActiveFile" class="secondary">Submit</button>
+        <button data-command="toiZero.checkSubmission" class="secondary">Check Result</button>
+        <button data-command="toiZero.openSolution" class="secondary">Solution</button>
+    </div>
     <div class="download-box">
         <h3>Download PDF</h3>
         <div class="download-row">
@@ -532,14 +666,17 @@ li strong { font-size: 11px; color: var(--vscode-descriptionForeground); }
         </div>
         ${
             this.lastDownload
-                ? `<div class="download-last"><small>Last file: ${escapeHtml(
+                ? `<div class="download-last"><small>${escapeHtml(
                       this.lastDownload.task,
                   )}</small><button data-command="toiZero.openDownloadedPdf" data-path="${escapeHtml(
                       this.lastDownload.path,
-                  )}" class="secondary">Open Last PDF</button></div>`
-                : '<small class="muted">No PDF downloaded yet.</small>'
+                  )}" class="secondary small-button">Open PDF</button></div>`
+                : ''
         }
-        <div class="task-folders">${downloadTaskFolders}</div>
+        <details class="advanced">
+            <summary>Browse all PDFs</summary>
+            <div class="task-folders">${downloadTaskFolders}</div>
+        </details>
     </div>
     ${
         this.error
@@ -552,25 +689,17 @@ li strong { font-size: 11px; color: var(--vscode-descriptionForeground); }
               }</div>`
             : ''
     }
-    <div class="grid">
-        <div class="metric"><div>${summary ? `${summary.counted_passed_all_levels}/${summary.required_all_levels}` : '-'}</div><div>All counted</div></div>
-        <div class="metric"><div>${summary ? `${summary.counted_passed_a2_a3}/${summary.required_a2_a3}` : '-'}</div><div>A2 + A3</div></div>
-        <div class="metric"><div>${done ?? '-'}</div><div>Done</div></div>
-        <div class="metric"><div>${low ?? '-'}/${todo ?? '-'}</div><div>Low / Todo</div></div>
-    </div>
-    <div class="actions">
-        <button data-command="toiZero.refreshStatus">Refresh Status / Login</button>
-        <button data-command="cph.runTestCases" class="secondary">Run Testcases</button>
-        <button data-command="toiZero.downloadPdf" class="secondary">Download PDF</button>
-        <button data-command="toiZero.submitActiveFile" class="secondary">Submit Active File</button>
-        <button data-command="toiZero.checkSubmission" class="secondary">Check Submission Result</button>
-        <button data-command="toiZero.openSolution" class="secondary">Open Solution</button>
-        <button data-command="toiZero.showStatusJson" class="secondary">Open Status JSON</button>
-        <button data-command="toiZero.clearCredentials" class="secondary">Clear Login</button>
-    </div>
-    <h3>Need Work</h3>
-    <ul>${sampleTasks}</ul>
-    <div class="footer-credit">Credits: PakinDioxide (solution reference), idkwhyiusethisname (implementation idea support)</div>
+    <section>
+        <h3>Need Work</h3>
+        <ul>${sampleTasks}</ul>
+    </section>
+    <details class="advanced">
+        <summary>Advanced</summary>
+        <div class="advanced-actions">
+            <button data-command="toiZero.showStatusJson" class="secondary">Status JSON</button>
+            <button data-command="toiZero.clearCredentials" class="secondary">Clear Login</button>
+        </div>
+    </details>
     <script nonce="${nonce}">
     const vscode = acquireVsCodeApi();
     document.querySelectorAll('button[data-command]').forEach((button) => {
@@ -1030,14 +1159,14 @@ export default function registerToiZero(context: vscode.ExtensionContext) {
     const openSolution = async (taskArg?: unknown) => {
         const task =
             taskArgumentToId(taskArg) ||
-            (await pickTaskId('Open solution search'));
+            (await pickTaskId('Open solution file'));
         if (!task) {
             return;
         }
+        const taskId = normalizeTaskId(task);
+        const level = taskId.split('-')[0];
         const url = vscode.Uri.parse(
-            `https://github.com/search?q=user%3APakinDioxide+${encodeURIComponent(
-                normalizeTaskId(task),
-            )}&type=code`,
+            `https://github.com/PakinDioxide/TOI-zero/blob/main/${level}/${taskId}.cpp`,
         );
         await vscode.env.openExternal(url);
         vscode.window.showInformationMessage(
@@ -1053,6 +1182,17 @@ export default function registerToiZero(context: vscode.ExtensionContext) {
         provider.refresh([]);
         dashboard.clearState('Saved TOI login cleared.');
         vscode.window.showInformationMessage('TOI Zero credentials cleared.');
+    };
+
+    const runToiTestCases = async () => {
+        dashboard.setCompact(true);
+        await vscode.commands.executeCommand('cph.runTestCases');
+        await vscode.commands.executeCommand('toiZero.testcases.focus');
+    };
+
+    const showDashboard = async () => {
+        dashboard.setCompact(false);
+        await vscode.commands.executeCommand('toiZero.dashboard.focus');
     };
 
     const pickTaskActions = async (task: string) => {
@@ -1086,6 +1226,8 @@ export default function registerToiZero(context: vscode.ExtensionContext) {
         ),
         vscode.window.registerTreeDataProvider('toiZero.tasks', provider),
         vscode.commands.registerCommand('toiZero.refreshStatus', refreshStatus),
+        vscode.commands.registerCommand('toiZero.runTestCases', runToiTestCases),
+        vscode.commands.registerCommand('toiZero.showDashboard', showDashboard),
         vscode.commands.registerCommand('toiZero.showStatusJson', showStatusJson),
         vscode.commands.registerCommand('toiZero.downloadPdf', downloadPdf),
         vscode.commands.registerCommand('toiZero.openDownloadedPdf', openDownloadedPdf),

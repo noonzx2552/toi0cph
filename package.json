@@ -23,34 +23,29 @@
         "viewsContainers": {
             "activitybar": [
                 {
-                    "id": "cph-judge-view-container",
-                    "title": "CPH Judge",
-                    "icon": "dist/static/panel-view-icon.svg"
-                },
-                {
-                    "id": "toiZero.container",
+                    "id": "toi-zero",
                     "title": "TOI Zero",
-                    "icon": "dist/static/panel-view-icon.svg"
+                    "icon": "dist/static/toi-zero-icon.svg"
                 }
             ]
         },
         "views": {
-            "cph-judge-view-container": [
+            "toi-zero": [
                 {
                     "type": "webview",
-                    "id": "cph.judgeView",
-                    "name": "Results"
-                }
-            ],
-            "toiZero.container": [
-                {
-                    "type": "webview",
-                    "id": "toiZero.dashboard",
+                    "id": "toiZero.testcases",
                     "name": "TOI Zero"
                 },
                 {
+                    "type": "webview",
+                    "id": "toiZero.dashboard",
+                    "name": "Dashboard",
+                    "visibility": "collapsed"
+                },
+                {
                     "id": "toiZero.tasks",
-                    "name": "Tasks"
+                    "name": "Tasks",
+                    "visibility": "collapsed"
                 }
             ]
         },
@@ -161,7 +156,7 @@
             },
             {
                 "key": "ctrl+alt+d",
-                "command": "cph.judgeView.focus"
+                "command": "toiZero.testcases.focus"
             }
         ],
         "configuration": {
