@@ -54,57 +54,94 @@ window.console.debug = customLogger.bind(window.console, originalConsole.debug);
 // Original: www.paypal.com/ncp/payment/CMLKCFEJEMX5L
 const payPalUrl = 'https://rb.gy/5iiorz';
 
-const sendToiCommand = (toiCommand: string) => {
+const sendToiCommand = (toiCommand: string, task?: string) => {
     vscodeApi.postMessage({
         command: 'toi-command',
         toiCommand,
+        task,
     });
 };
 
 function ToiActions() {
+    const [pdfTask, setPdfTask] = useState<string>('');
+    const downloadPdf = () => {
+        const task = pdfTask.trim();
+        sendToiCommand('toiZero.downloadPdf', task || undefined);
+    };
+
     return (
-        <div className="toi-actions">
-            <div className="toi-actions-header">
-                <strong>TOI Zero</strong>
+        <details className="toi-panel" open>
+            <summary>
+                <span>TOI Zero</span>
                 <button
                     className="btn btn-quiet"
-                    onClick={() => sendToiCommand('toiZero.refreshStatus')}
+                    onClick={(event) => {
+                        event.preventDefault();
+                        sendToiCommand('toiZero.refreshStatus');
+                    }}
                     title="Refresh TOI status"
                 >
                     Refresh
                 </button>
+            </summary>
+            <div className="toi-panel-body">
+                <div className="toi-pdf-row">
+                    <input
+                        className="toi-input"
+                        value={pdfTask}
+                        onChange={(event) => setPdfTask(event.target.value)}
+                        onKeyDown={(event) => {
+                            if (event.key === 'Enter') {
+                                downloadPdf();
+                            }
+                        }}
+                        placeholder="A1-001"
+                        spellCheck={false}
+                    />
+                    <button
+                        className="btn btn-blue"
+                        onClick={downloadPdf}
+                        title="Download task PDF"
+                    >
+                        PDF
+                    </button>
+                </div>
+                <div className="toi-actions-grid">
+                    <button
+                        className="btn btn-blue"
+                        onClick={() =>
+                            sendToiCommand('toiZero.submitActiveFile')
+                        }
+                        title="Submit active file"
+                    >
+                        Submit
+                    </button>
+                    <button
+                        className="btn btn-blue"
+                        onClick={() =>
+                            sendToiCommand('toiZero.checkSubmission')
+                        }
+                        title="Check latest submission"
+                    >
+                        Check
+                    </button>
+                    <button
+                        className="btn btn-blue"
+                        onClick={() => sendToiCommand('toiZero.openSolution')}
+                        title="Open solution reference"
+                    >
+                        Solution
+                    </button>
+                    <button
+                        className="btn btn-quiet"
+                        onClick={() => sendToiCommand('toiZero.showStatusJson')}
+                        title="Open raw TOI status JSON"
+                    >
+                        Status
+                    </button>
+                </div>
             </div>
-            <div className="toi-actions-grid">
-                <button
-                    className="btn btn-blue"
-                    onClick={() => sendToiCommand('toiZero.downloadPdf')}
-                    title="Download task PDF"
-                >
-                    PDF
-                </button>
-                <button
-                    className="btn btn-blue"
-                    onClick={() => sendToiCommand('toiZero.submitActiveFile')}
-                    title="Submit active file"
-                >
-                    Submit
-                </button>
-                <button
-                    className="btn btn-blue"
-                    onClick={() => sendToiCommand('toiZero.checkSubmission')}
-                    title="Check latest submission"
-                >
-                    Check
-                </button>
-                <button
-                    className="btn btn-blue"
-                    onClick={() => sendToiCommand('toiZero.openSolution')}
-                    title="Open solution reference"
-                >
-                    Solution
-                </button>
-            </div>
-        </div>
+        </details>
     );
 }
 
@@ -672,55 +709,61 @@ function Judge(props: {
             {notification && <div className="notification">{notification}</div>}
             {renderInfoPage()}
             <ToiActions />
-            <div className="meta">
-                <span className="problem-name">
-                    <a href={getHref()}>{problem.name}</a>{' '}
-                    {compiling && (
-                        <b className="compiling" title="Compiling">
-                            <span className="loader"></span>
-                        </b>
-                    )}
-                </span>
-                <span
-                    className={`pass-rate ${
-                        numPassed === total
-                            ? 'pass-all'
-                            : numPassed === 0
-                              ? 'fail-all'
-                              : ''
-                    }`}
-                >
-                    {numPassed} / {total} passed{' '}
-                </span>
-            </div>
-            <div className="results">{views}</div>
-            <div className="margin-10">
-                <div className="row">
-                    <button
-                        className="btn btn-green"
-                        onClick={newCase}
-                        title="Create a new empty testcase"
-                    >
-                        <span className="icon">
-                            <i className="codicon codicon-add"></i>
-                        </span>{' '}
-                        New Testcase
-                    </button>
-                    {renderSubmitButton()}
-                </div>
-                <div>
+            <details className="testcase-panel" open>
+                <summary>
+                    <span className="problem-name">
+                        <a href={getHref()}>{problem.name}</a>{' '}
+                        {compiling && (
+                            <b className="compiling" title="Compiling">
+                                <span className="loader"></span>
+                            </b>
+                        )}
+                    </span>
                     <span
-                        onClick={toggleOnlineJudgeEnv}
-                        className={`oj-box ${
-                            onlineJudgeEnv ? 'oj-enabled' : ''
+                        className={`pass-rate ${
+                            numPassed === total
+                                ? 'pass-all'
+                                : numPassed === 0
+                                  ? 'fail-all'
+                                  : ''
                         }`}
                     >
-                        {onlineJudgeEnv ? '☑' : '☐'}{' '}
-                        <span className="oj-code">Set ONLINE_JUDGE</span>
+                        {numPassed} / {total} passed
                     </span>
-                    {renderTimeoutAVSuggestion()}
+                </summary>
+                <div className="testcase-panel-body">
+                    <div className="results">{views}</div>
+                    <div className="margin-10">
+                        <div className="row">
+                            <button
+                                className="btn btn-green"
+                                onClick={newCase}
+                                title="Create a new empty testcase"
+                            >
+                                <span className="icon">
+                                    <i className="codicon codicon-add"></i>
+                                </span>{' '}
+                                New Testcase
+                            </button>
+                            {renderSubmitButton()}
+                        </div>
+                        <div>
+                            <span
+                                onClick={toggleOnlineJudgeEnv}
+                                className={`oj-box ${
+                                    onlineJudgeEnv ? 'oj-enabled' : ''
+                                }`}
+                            >
+                                {onlineJudgeEnv ? '☑' : '☐'}{' '}
+                                <span className="oj-code">
+                                    Set ONLINE_JUDGE
+                                </span>
+                            </span>
+                            {renderTimeoutAVSuggestion()}
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </details>
             <div className="actions">
                 <div className="row">
                     <button

@@ -78,18 +78,48 @@ body {
     filter: brightness(115%);
 }
 
-.toi-actions {
-    padding: 10px;
-    border-bottom: 1px solid rgba(200, 200, 200, 0.16);
-    background: var(--vscode-sideBar-background);
+.toi-panel,
+.testcase-panel {
+    margin: 10px;
+    border: 1px solid var(--vscode-panel-border);
+    background: var(--vscode-editor-background);
+    overflow: hidden;
 }
 
-.toi-actions-header {
+.toi-panel summary,
+.testcase-panel summary {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    margin-bottom: 8px;
+    padding: 10px;
+    font-weight: 700;
+    list-style: none;
+}
+
+.toi-panel summary::-webkit-details-marker,
+.testcase-panel summary::-webkit-details-marker {
+    display: none;
+}
+
+.toi-panel summary::before,
+.testcase-panel summary::before {
+    content: '›';
+    color: var(--vscode-textLink-foreground);
+    font-size: 16px;
+    line-height: 1;
+    transform: rotate(0deg);
+}
+
+.toi-panel[open] summary::before,
+.testcase-panel[open] summary::before {
+    transform: rotate(90deg);
+}
+
+.toi-panel-body,
+.testcase-panel-body {
+    border-top: 1px solid var(--vscode-panel-border);
+    padding: 10px;
 }
 
 .toi-actions-grid {
@@ -98,16 +128,35 @@ body {
     gap: 6px;
 }
 
-.toi-actions .btn {
+.toi-pdf-row {
+    display: grid;
+    grid-template-columns: 1fr 86px;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.toi-input {
+    min-width: 0;
+    color: var(--vscode-input-foreground);
+    background: var(--vscode-input-background);
+    border: 1px solid var(--vscode-input-border);
+    padding: 7px 8px;
+}
+
+.toi-panel .btn {
     width: 100%;
     margin: 0;
     padding: 7px 8px;
 }
 
 .btn-quiet {
-    width: auto !important;
     color: var(--vscode-button-secondaryForeground);
     background: var(--vscode-button-secondaryBackground);
+}
+
+.toi-panel summary .btn-quiet {
+    width: auto !important;
+    min-width: 78px;
 }
 
 .btn-blue {

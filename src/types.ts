@@ -194,6 +194,7 @@ export type GetExtLogs = {
 export type ToiCommand = {
     command: 'toi-command';
     toiCommand: string;
+    task?: string;
 };
 
 export type WebviewToVSEvent =

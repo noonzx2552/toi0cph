@@ -84,8 +84,14 @@ class JudgeViewProvider implements vscode.WebviewViewProvider {
 
                     case 'toi-command': {
                         if (this.toiCommands.has(message.toiCommand)) {
+                            const args =
+                                typeof message.task === 'string' &&
+                                message.task.trim()
+                                    ? [message.task.trim()]
+                                    : [];
                             void vscode.commands.executeCommand(
                                 message.toiCommand,
+                                ...args,
                             );
                         }
                         break;
