@@ -1,127 +1,114 @@
-# Competitive Programming Helper (cph)
+# TOI Zero Helper for CPH
 
-Quickly compile, run and judge competitive programming problems in VS Code.
-Automatically download testcases , or write & test your own problems. Once you
-are done, easily submit your solutions directly with the click of a button!
-
-Cph supports a large number of popular platforms like Codeforces, Codechef,
-TopCoder etc. with the help of competitive companion browser extension
+เครื่องมือสำหรับคนทำโจทย์แข่งขันใน VS Code ที่เอา `Competitive Programming Helper (CPH)` มาต่อยอดให้เข้ากับ workflow ของ `TOI Zero` แบบครบชุด
 
 ![Screenshot](screenshots/screenshot-main.png)
 
-## Quick start
+## ภาพรวม
 
-1. [Install cph](https://marketplace.visualstudio.com/items?itemName=DivyanshuAgrawal.competitive-programming-helper)
-   in VS Code and open any folder.
-1. [Install competitive companion](https://github.com/jmerle/competitive-companion#readme)
-   in your browser.
-1. Use Companion by pressing the green plus (+) circle from the browser toolbar
-   when visiting any problem page.
-1. The file opens in VS Code with testcases preloaded. Press
-   <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>B</kbd> to run them.
+โปรเจกต์นี้คือ fork ของ CPH ที่ยังคงจุดเด่นเดิมไว้ครบ:
 
--   (Optional) Install the [cph-submit](https://github.com/agrawal-d/cph-submit)
-    browser extension to enable submitting directly on CodeForces.
--   (Optional) Install submit client and config file from the
-    [Kattis help page](https://open.kattis.com/help/submit) after logging in.
+- รัน testcases ในเครื่องได้ทันที
+- import โจทย์จาก Competitive Companion
+- compile, judge, และ submit ได้จากใน VS Code
+- รองรับหลายภาษา
 
-You can also use this extension locally, just open any supported file and press
-'Run Testcases' (or <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>B</kbd>) to manually
-enter testcases.
+และเพิ่ม workflow สำหรับ `TOI Zero` เข้าไปโดยตรง:
 
-[![See detailed user guide](https://img.shields.io/badge/-Read%20detailed%20usage%20guide-blue?style=for-the-badge)](docs/user-guide.md)
+- ดูสถานะงานและคะแนนจาก sidebar
+- ดาวน์โหลด statement PDF ของแต่ละ task
+- ดึง source ที่ผ่านแล้วมาเก็บไว้เป็นชุด
+- submit งานที่เปิดอยู่ หรือ submit ทีเดียวทุก task ที่ผ่านแล้ว
+- เช็กผล submission ล่าสุดได้จากใน editor
 
-## Features
+## จุดเด่น
 
--   Automatic compilation with display for compilation errors.
--   Intelligent judge with support for signals, timeouts and runtime errors.
--   Works with Competitive Companion.
--   [Codeforces auto-submit](https://github.com/agrawal-d/cph-submit)
-    integration.
--   [Kattis auto-submit](docs/user-guide.md) integration.
--   Works locally for your own problems.
--   Support for several languages.
+- UI แบบ dashboard สำหรับ `TOI Zero` ที่ดู status ได้เร็ว
+- tree view แยกงาน `A1`, `A2`, `A3`
+- มีสถานะ task ชัดเจน เช่น `DONE`, `LOW`, `TODO`, `EXCLUDED`
+- cache source ที่ผ่านแล้วไว้ใน `.toi-zero/passed-sources/`
+- export source ไปที่ `toi-passed-code/`
+- เปิด solution จาก `PakinDioxide/TOI-zero` ได้ตรง ๆ
+- รองรับการ submit จากไฟล์ที่กำลังเปิดอยู่
+- รองรับ C/C++/Python ตาม mapping ที่ใช้กับ TOI
 
-## TOI Zero Integration
+## เริ่มใช้งานเร็ว ๆ
 
-This fork adds TOI Zero workflow commands for
-`toi-coding.informatics.buu.ac.th/00-pre-toi`.
+1. ติดตั้ง extension นี้ใน VS Code แล้วเปิดโฟลเดอร์งาน
+2. เปิดแท็บ `TOI Zero` จาก Activity Bar
+3. กด `TOI Zero: Refresh Status` เพื่อ login และโหลดรายการ task
+4. เลือก task ที่ต้องการ แล้วใช้คำสั่งที่เหมาะกับงาน
 
-Open the `TOI Zero` activity bar icon to use the dashboard. It shows the
-connection state, pass-count summary, testcase runner, unfinished tasks, and
-large buttons for the common actions. If login or the grader server fails, the
-dashboard shows `TOI Zero server can't connect` with the underlying error.
+ถ้าต้องการทดสอบโค้ดในเครื่อง:
 
-Available functions:
+- กด <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>B</kbd> เพื่อรัน testcases
+- กด <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>S</kbd> เพื่อ submit ไป Codeforces
+- กด <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>D</kbd> เพื่อโฟกัสหน้าต่าง TOI Zero testcases
 
--   `TOI Zero: Refresh Status` - login, fetch the overview page, and list all
-    A1/A2/A3 tasks in the TOI Zero tree view.
--   `TOI Zero: Show Status JSON` - open the full parsed JSON status, including
-    summary, tasks, counted tasks, excluded tasks, and scores.
--   `TOI Zero: Download PDF` - download a selected task statement PDF into
-    `toi-pdfs/` and open it in VS Code.
--   `TOI Zero: Submit Active File` - submit the currently opened source file to
-    the selected task. The extension maps `.cpp/.cc/.cxx` to `C++17 / g++`,
-    `.c` to `C11 / gcc`, and `.py` to `Python 3 / CPython`.
--   `TOI Zero: Check Submission Result` - fetch the latest selected-task
-    submission page, wait briefly if the grader is still running, and report
-    `PASS`, `NOT_PASS`, `RUNNING`, or `UNKNOWN` with the score when available.
--   `TOI Zero: Open Solution (PakinDioxide)` - open the selected task solution
-    file in `PakinDioxide/TOI-zero`.
--   `TOI Zero: Clear Saved Login` - remove saved TOI username/password from VS
-    Code Secret Storage.
+## TOI Zero Workflow
 
-The TOI Zero tree states are:
+คำสั่งหลักที่ใช้งานบ่อย:
 
--   `DONE` - score is at least 80 and the task is counted.
--   `LOW` - submitted, but score is below 80.
--   `TODO` - no passing score yet.
--   `EXCLUDED` - task is excluded from the 2569 criteria.
--   `EXCLUDED_OK` - task is excluded, but already has a passing score.
+- `TOI Zero: Refresh Status` - login และดึงสถานะล่าสุดของ TOI Zero
+- `TOI Zero: Show Status JSON` - เปิด JSON สถานะที่ parse แล้ว
+- `TOI Zero: Show Solved Scores` - ดูรายการงานที่ solve แล้วพร้อมคะแนน
+- `TOI Zero: Download PDF` - ดาวน์โหลด statement PDF ของ task ที่เลือก
+- `TOI Zero: Download Passed Code` - export source ของ task ที่ผ่านแล้ว
+- `TOI Zero: Submit Active File` - submit ไฟล์ที่เปิดอยู่ไปยัง task ที่เลือก
+- `TOI Zero: Submit All Passed` - submit source ที่ผ่านแล้วทั้งหมดในชุดเดียว
+- `TOI Zero: Check Submission Result` - เช็กผล submission ล่าสุดของ task
+- `TOI Zero: Open Solution (PakinDioxide)` - เปิด solution reference
+- `TOI Zero: Clear Saved Login` - ลบ username/password ที่บันทึกไว้
 
-Credits: GitHub `PakinDioxide`, `idkwhyiusethisname`.
+สถานะของ task ที่แสดงใน tree:
 
-## Supported Languages
+- `DONE` - คะแนนถึงเกณฑ์และนับรวมแล้ว
+- `LOW` - เคย submit แล้วแต่คะแนนยังต่ำกว่าเกณฑ์
+- `TODO` - ยังไม่มีคะแนนผ่าน
+- `EXCLUDED` - ถูกยกเว้นจาก criteria
+- `EXCLUDED_OK` - ถูกยกเว้น แต่มีคะแนนผ่านแล้ว
 
--   C++
--   C
--   C#
--   Rust
--   Go
--   Haskell
--   Python
--   Ruby
--   Java
--   JavaScript (Node.js)
+## โครงสร้างไฟล์ที่เกี่ยวข้อง
 
-## Contributing
+- `.toi-zero/passed-sources/` - cache source ที่ผ่านแล้ว
+- `toi-passed-code/` - ไฟล์ที่ export ออกมาเพื่อใช้งานต่อ
+- `toi-pdfs/` - statement PDF ที่ดาวน์โหลดมา
 
-You can contribute to this extension in many ways:
+## ภาษาที่รองรับ
 
--   File bug reports by creating issues.
--   Develop this extension further - see [developer guide](docs/dev-guide.md).
--   Spreading the word about this extension.
+- C++
+- C
+- C#
+- Rust
+- Go
+- Haskell
+- Python
+- Ruby
+- Java
+- JavaScript
 
-**Before creating a Pull Request, please create an issue to discuss the
-approach. It makes reviewing and accepting the PR much easier.**
+## การตั้งค่าที่ควรรู้
 
-## Telemetry
+เปิด `Settings` ของ VS Code แล้วค้นหา `Competitive Programming Helper` หรือ `TOI Zero` เพื่อปรับค่าได้ เช่น:
 
-To show live user count, the extension sends a request to the server every few
-seconds. No information is sent with the request.
+- `cph.general.timeOut` - เวลาหมดอายุของ testcases
+- `cph.general.defaultLanguage` - ภาษาเริ่มต้นตอน import โจทย์ใหม่
+- `cph.general.menuChoices` - ลำดับภาษาที่แสดงในเมนู
+- `cph.language.*.Command` - คำสั่ง compiler/runtime ของแต่ละภาษา
+- `toiZero.pythonPath` - path หรือ command ของ Python ที่ใช้กับ TOI Zero
+
+## เหมาะกับใคร
+
+- คนที่แก้โจทย์แข่งขันใน VS Code เป็นประจำ
+- คนที่ต้องจัดการโจทย์ TOI Zero หลาย task พร้อมกัน
+- คนที่อยากได้ทั้ง test runner และ TOI workflow ในตัวเดียว
+
+## เครดิต
+
+โปรเจกต์นี้อ้างอิงและต่อยอดจาก `Competitive Programming Helper` โดย `Divyanshu Agrawal`
+และมีส่วนของ TOI Zero workflow ที่เชื่อมกับงานของ `PakinDioxide/TOI-zero`
 
 ## License
 
-Copyright (C) 2019 - Present Divyanshu Agrawal
+GPL-3.0-or-later
 
-This program is free software: you can redistribute it and/or modify it under
-the terms of the GNU General Public License as published by the Free Software
-Foundation, either version 3 of the License, or (at your option) any later
-version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with
-this program. If not, see https://www.gnu.org/licenses/.
