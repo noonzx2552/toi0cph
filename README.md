@@ -1,80 +1,80 @@
 # TOI Zero Helper for CPH
 
-เครื่องมือสำหรับคนทำโจทย์แข่งขันใน VS Code ที่เอา `Competitive Programming Helper (CPH)` มาต่อยอดให้เข้ากับ workflow ของ `TOI Zero` แบบครบชุด
+An upgraded VS Code workflow for competitive programming, built on top of `Competitive Programming Helper (CPH)` and tailored for `TOI Zero`.
 
 ![Screenshot](screenshots/screenshot-main.png)
 
-## ภาพรวม
+## Overview
 
-โปรเจกต์นี้คือ fork ของ CPH ที่ยังคงจุดเด่นเดิมไว้ครบ:
+This project is a fork of CPH that keeps the core competitive programming features you already know:
 
-- รัน testcases ในเครื่องได้ทันที
-- import โจทย์จาก Competitive Companion
-- compile, judge, และ submit ได้จากใน VS Code
-- รองรับหลายภาษา
+- Run testcases locally
+- Import problems with Competitive Companion
+- Compile, judge, and submit directly from VS Code
+- Work across multiple languages
 
-และเพิ่ม workflow สำหรับ `TOI Zero` เข้าไปโดยตรง:
+It also adds a dedicated `TOI Zero` workflow:
 
-- ดูสถานะงานและคะแนนจาก sidebar
-- ดาวน์โหลด statement PDF ของแต่ละ task
-- ดึง source ที่ผ่านแล้วมาเก็บไว้เป็นชุด
-- submit งานที่เปิดอยู่ หรือ submit ทีเดียวทุก task ที่ผ่านแล้ว
-- เช็กผล submission ล่าสุดได้จากใน editor
+- View task status and scores from the sidebar
+- Download statement PDFs for selected tasks
+- Export passing source files as a reusable set
+- Submit the active file or batch-submit all passing tasks
+- Check the latest submission result without leaving the editor
 
-## จุดเด่น
+## Highlights
 
-- UI แบบ dashboard สำหรับ `TOI Zero` ที่ดู status ได้เร็ว
-- tree view แยกงาน `A1`, `A2`, `A3`
-- มีสถานะ task ชัดเจน เช่น `DONE`, `LOW`, `TODO`, `EXCLUDED`
-- cache source ที่ผ่านแล้วไว้ใน `.toi-zero/passed-sources/`
-- export source ไปที่ `toi-passed-code/`
-- เปิด solution จาก `PakinDioxide/TOI-zero` ได้ตรง ๆ
-- รองรับการ submit จากไฟล์ที่กำลังเปิดอยู่
-- รองรับ C/C++/Python ตาม mapping ที่ใช้กับ TOI
+- A dashboard-style `TOI Zero` panel for fast status checks
+- Tree view grouped by `A1`, `A2`, and `A3`
+- Clear task states such as `DONE`, `LOW`, `TODO`, and `EXCLUDED`
+- Local cache for passing source files in `.toi-zero/passed-sources/`
+- Exported sources in `toi-passed-code/`
+- Direct access to reference solutions from `PakinDioxide/TOI-zero`
+- Submit from the file that is currently open
+- Built-in support for `C`, `C++`, and `Python` mappings used by TOI
 
-## เริ่มใช้งานเร็ว ๆ
+## Quick Start
 
-1. ติดตั้ง extension นี้ใน VS Code แล้วเปิดโฟลเดอร์งาน
-2. เปิดแท็บ `TOI Zero` จาก Activity Bar
-3. กด `TOI Zero: Refresh Status` เพื่อ login และโหลดรายการ task
-4. เลือก task ที่ต้องการ แล้วใช้คำสั่งที่เหมาะกับงาน
+1. Install this extension in VS Code and open your workspace.
+2. Open the `TOI Zero` view from the Activity Bar.
+3. Run `TOI Zero: Refresh Status` to log in and load the task list.
+4. Pick a task and use the action you need.
 
-ถ้าต้องการทดสอบโค้ดในเครื่อง:
+To test code locally:
 
-- กด <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>B</kbd> เพื่อรัน testcases
-- กด <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>S</kbd> เพื่อ submit ไป Codeforces
-- กด <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>D</kbd> เพื่อโฟกัสหน้าต่าง TOI Zero testcases
+- Press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>B</kbd> to run testcases
+- Press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>S</kbd> to submit to Codeforces
+- Press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>D</kbd> to focus the TOI Zero testcases view
 
 ## TOI Zero Workflow
 
-คำสั่งหลักที่ใช้งานบ่อย:
+Common commands:
 
-- `TOI Zero: Refresh Status` - login และดึงสถานะล่าสุดของ TOI Zero
-- `TOI Zero: Show Status JSON` - เปิด JSON สถานะที่ parse แล้ว
-- `TOI Zero: Show Solved Scores` - ดูรายการงานที่ solve แล้วพร้อมคะแนน
-- `TOI Zero: Download PDF` - ดาวน์โหลด statement PDF ของ task ที่เลือก
-- `TOI Zero: Download Passed Code` - export source ของ task ที่ผ่านแล้ว
-- `TOI Zero: Submit Active File` - submit ไฟล์ที่เปิดอยู่ไปยัง task ที่เลือก
-- `TOI Zero: Submit All Passed` - submit source ที่ผ่านแล้วทั้งหมดในชุดเดียว
-- `TOI Zero: Check Submission Result` - เช็กผล submission ล่าสุดของ task
-- `TOI Zero: Open Solution (PakinDioxide)` - เปิด solution reference
-- `TOI Zero: Clear Saved Login` - ลบ username/password ที่บันทึกไว้
+- `TOI Zero: Refresh Status` - log in and fetch the latest TOI Zero status
+- `TOI Zero: Show Status JSON` - open the parsed status as JSON
+- `TOI Zero: Show Solved Scores` - list solved tasks with scores
+- `TOI Zero: Download PDF` - download the statement PDF for a selected task
+- `TOI Zero: Download Passed Code` - export source files for passing tasks
+- `TOI Zero: Submit Active File` - submit the file currently open in the editor
+- `TOI Zero: Submit All Passed` - submit all exported passing source files in one batch
+- `TOI Zero: Check Submission Result` - check the latest submission result for a task
+- `TOI Zero: Open Solution (PakinDioxide)` - open the reference solution
+- `TOI Zero: Clear Saved Login` - remove stored TOI username and password
 
-สถานะของ task ที่แสดงใน tree:
+Task states shown in the tree:
 
-- `DONE` - คะแนนถึงเกณฑ์และนับรวมแล้ว
-- `LOW` - เคย submit แล้วแต่คะแนนยังต่ำกว่าเกณฑ์
-- `TODO` - ยังไม่มีคะแนนผ่าน
-- `EXCLUDED` - ถูกยกเว้นจาก criteria
-- `EXCLUDED_OK` - ถูกยกเว้น แต่มีคะแนนผ่านแล้ว
+- `DONE` - counted and at or above the passing threshold
+- `LOW` - submitted, but still below the passing threshold
+- `TODO` - no passing score yet
+- `EXCLUDED` - excluded from the criteria
+- `EXCLUDED_OK` - excluded, but already has a passing score
 
-## โครงสร้างไฟล์ที่เกี่ยวข้อง
+## Files and Folders
 
-- `.toi-zero/passed-sources/` - cache source ที่ผ่านแล้ว
-- `toi-passed-code/` - ไฟล์ที่ export ออกมาเพื่อใช้งานต่อ
-- `toi-pdfs/` - statement PDF ที่ดาวน์โหลดมา
+- `.toi-zero/passed-sources/` - local cache of passing source files
+- `toi-passed-code/` - exported source files ready for reuse
+- `toi-pdfs/` - downloaded statement PDFs
 
-## ภาษาที่รองรับ
+## Supported Languages
 
 - C++
 - C
@@ -87,26 +87,26 @@
 - Java
 - JavaScript
 
-## การตั้งค่าที่ควรรู้
+## Settings Worth Knowing
 
-เปิด `Settings` ของ VS Code แล้วค้นหา `Competitive Programming Helper` หรือ `TOI Zero` เพื่อปรับค่าได้ เช่น:
+Open VS Code `Settings` and search for `Competitive Programming Helper` or `TOI Zero`. Useful options include:
 
-- `cph.general.timeOut` - เวลาหมดอายุของ testcases
-- `cph.general.defaultLanguage` - ภาษาเริ่มต้นตอน import โจทย์ใหม่
-- `cph.general.menuChoices` - ลำดับภาษาที่แสดงในเมนู
-- `cph.language.*.Command` - คำสั่ง compiler/runtime ของแต่ละภาษา
-- `toiZero.pythonPath` - path หรือ command ของ Python ที่ใช้กับ TOI Zero
+- `cph.general.timeOut` - testcase timeout
+- `cph.general.defaultLanguage` - default language for newly imported problems
+- `cph.general.menuChoices` - language order in the import menu
+- `cph.language.*.Command` - compiler/runtime command for each language
+- `toiZero.pythonPath` - Python command or path used by the TOI Zero integration
 
-## เหมาะกับใคร
+## Who It's For
 
-- คนที่แก้โจทย์แข่งขันใน VS Code เป็นประจำ
-- คนที่ต้องจัดการโจทย์ TOI Zero หลาย task พร้อมกัน
-- คนที่อยากได้ทั้ง test runner และ TOI workflow ในตัวเดียว
+- People who solve competitive programming problems in VS Code every day
+- People who need to manage many TOI Zero tasks at once
+- People who want local judging and TOI workflow in one place
 
-## เครดิต
+## Credits
 
-โปรเจกต์นี้อ้างอิงและต่อยอดจาก `Competitive Programming Helper` โดย `Divyanshu Agrawal`
-และมีส่วนของ TOI Zero workflow ที่เชื่อมกับงานของ `PakinDioxide/TOI-zero`
+This project is based on `Competitive Programming Helper` by `Divyanshu Agrawal`.
+The TOI Zero workflow is connected to resources from `PakinDioxide/TOI-zero`.
 
 ## License
 
